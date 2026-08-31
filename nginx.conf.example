@@ -1,0 +1,20 @@
+# Reverse proxy so the app is served over HTTPS instead of plain HTTP.
+# Install: sudo apt install nginx certbot python3-certbot-nginx
+# Save this as /etc/nginx/sites-available/portfolio-kit, then:
+#   sudo ln -s /etc/nginx/sites-available/portfolio-kit /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#   sudo certbot --nginx -d portfolio.yourdomain.com   # gets + auto-renews the TLS cert
+
+server {
+    listen 80;
+    server_name portfolio.yourdomain.com;   # <-- point a DNS A record at your server's IP first
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 20M;   # broker export files are small, but headroom is cheap
+    }
+}

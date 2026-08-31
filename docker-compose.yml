@@ -1,0 +1,11 @@
+services:
+  portfolio-kit:
+    build: .
+    container_name: portfolio-kit
+    restart: unless-stopped        # survives crashes and server reboots
+    env_file: .env
+    ports:
+      - "127.0.0.1:8000:8000"      # only reachable via the nginx proxy below, not directly
+    volumes:
+      - ./inputs:/app/inputs       # your uploaded broker files persist across container rebuilds
+      - ./outputs:/app/outputs     # generated reviews persist the same way
